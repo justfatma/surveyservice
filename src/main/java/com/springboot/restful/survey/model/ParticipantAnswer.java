@@ -27,6 +27,16 @@ public class ParticipantAnswer {
 	
 	@Enumerated(EnumType.STRING)
 	private Answer answer;
+	
+	public ParticipantAnswer() {
+		super();
+	}
+	
+	public ParticipantAnswer(Question question, Answer answer) {
+		super();
+		this.question= question;
+		this.answer=answer;
+	}
 
 	public Long getId() {
 		return id;

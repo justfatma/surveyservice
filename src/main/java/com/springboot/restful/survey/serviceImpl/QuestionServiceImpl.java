@@ -13,14 +13,14 @@ import com.springboot.restful.survey.service.QuestionService;
 public class QuestionServiceImpl implements QuestionService{
 
 	@Autowired
-	private QuestionRepository questionRepo;
+	private QuestionRepository questionRepository;
 	
 	@Override
 	public void deleteQuestion(Long questionId) {
-		Question currentQuestion= questionRepo.findById(questionId).orElseThrow( 
+		Question currentQuestion = questionRepository.findById(questionId).orElseThrow( 
 				()-> new ResourceNotFoundException("QuestionServiceImpl/deleteQuestion : Question Id not found. -> " + questionId));
 	
-		questionRepo.delete(currentQuestion);
+		questionRepository.delete(currentQuestion);
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class QuestionServiceImpl implements QuestionService{
 		survey.setId(surveyId);
 		question.setSurvey(survey);
 		
-		Question savedQuestion=questionRepo.save(question);
+		Question savedQuestion = questionRepository.save(question);
 		return savedQuestion;
 	}
 

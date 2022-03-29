@@ -3,6 +3,7 @@ package com.springboot.restful.survey.serviceImpl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
@@ -25,13 +26,13 @@ import com.springboot.restful.survey.service.ParticipantService;
 public class ParticipantServiceImpl implements ParticipantService{
 
 	@Autowired
-	private ParticipantRepository participantRepo;
+	private ParticipantRepository participantRepository;
 	
 	@Autowired
-	private ParticipantAnswerRepository answerRepo;
+	private ParticipantAnswerRepository answerRepository;
 	
 	@Autowired
-	private QuestionRepository questionRepo;
+	private QuestionRepository questionRepository;
 	
 	@Autowired
 	private EntityManager entityManager;
@@ -40,30 +41,30 @@ public class ParticipantServiceImpl implements ParticipantService{
 	@Override
 	public List<Participant> getParticipantList() {
 		
-		return participantRepo.findAll();
+		return participantRepository.findAll();
 	}
 
 	@Override
 	public Participant saveParticipantWithAnswers(Participant participant) {
 		
-		Participant savedParticipant=participantRepo.save(participant);
+		Participant savedParticipant = participantRepository.save(participant);
 		
 		List<ParticipantAnswer> savedAnswerList = new ArrayList<>();
 		
-		List<ParticipantAnswer> answerList= participant.getAnswerList();
+		List<ParticipantAnswer> answerList = participant.getAnswerList();
 		
 		for (ParticipantAnswer answer: answerList) {
 			
-			if (answer.getQuestion()==null || answer.getQuestion().getId()==null) {
+			if (answer.getQuestion() == null || answer.getQuestion().getId() == null) {
 				throw new ResourceNotFoundException("saveParticipantWithAnswers : Question Id can't be empty. -> ");
 			}
 			
-			Question ques= questionRepo.findById(answer.getQuestion().getId()).orElseThrow( 
+			Question ques = questionRepository.findById(answer.getQuestion().getId()).orElseThrow( 
 					()-> new ResourceNotFoundException("saveParticipantWithAnswers : Question Id is not found. -> " + answer.getQuestion().getId()));
 			answer.setQuestion(ques);
 			
 			answer.setParticipant(savedParticipant);
-			savedAnswerList.add( answerRepo.save(answer));
+			savedAnswerList.add( answerRepository.save(answer));
 		}
 		savedParticipant.setAnswerList(savedAnswerList);
 		
@@ -73,27 +74,27 @@ public class ParticipantServiceImpl implements ParticipantService{
 	@Override
 	public Participant updateParticipantWithAnswers(Participant participant) {
 		
-		Participant currentparticipant= participantRepo.findById(participant.getId()).orElseThrow( 
+		Participant currentparticipant = participantRepository.findById(participant.getId()).orElseThrow( 
 				()-> new ResourceNotFoundException("ParticipantServiceImpl/updateParticipantAnswers : Participant Id not found. -> " + participant.getId()));
 			
 		currentparticipant.setAge(participant.getAge());
 		currentparticipant.setName(participant.getName());
 		currentparticipant.setSurname(participant.getSurname());
 		
-		List<ParticipantAnswer> answerList= participant.getAnswerList();
+		List<ParticipantAnswer> answerList = participant.getAnswerList();
 		
-		Participant savedParticipant=participantRepo.save(currentparticipant);
+		Participant savedParticipant = participantRepository.save(currentparticipant);
 		
 		
 		List<ParticipantAnswer> savedAnswers=new ArrayList<>();
 		for(ParticipantAnswer answer:answerList) {
 			
-			ParticipantAnswer pAnswer= answerRepo.getById(answer.getId());
+			ParticipantAnswer pAnswer = answerRepository.getById(answer.getId());
 					
 			pAnswer.setAnswer(answer.getAnswer());
 			
 			
-			ParticipantAnswer savedAnswer= answerRepo.save(pAnswer);
+			ParticipantAnswer savedAnswer = answerRepository.save(pAnswer);
 			savedAnswers.add(savedAnswer);
 		}
 		
@@ -105,15 +106,15 @@ public class ParticipantServiceImpl implements ParticipantService{
 	@Override
 	public void deleteParticipantWithAnswers(Long participantId) {
 		
-		List<ParticipantAnswer> answerList = answerRepo.findByParticipantId(participantId);
+		List<ParticipantAnswer> answerList = answerRepository.findByParticipantId(participantId);
 		for(ParticipantAnswer answerToBeDeleted: answerList) {
-			answerRepo.delete(answerToBeDeleted);
+			answerRepository.delete(answerToBeDeleted);
 		}
 		
-		Participant currentParticipant= participantRepo.findById(participantId).orElseThrow( 
+		Participant currentParticipant= participantRepository.findById(participantId).orElseThrow( 
 				()-> new ResourceNotFoundException("ParticipantServiceImpl/deleteParticipantWithAnswers : Participant Id not found. -> " + participantId));
 	
-		participantRepo.delete(currentParticipant);
+		participantRepository.delete(currentParticipant);
 		
 	}
 
@@ -168,7 +169,7 @@ public class ParticipantServiceImpl implements ParticipantService{
 			}
 		}
 				
-		TreeMap<Answer, String> map=new TreeMap<>();
+		TreeMap<Answer, String> map = new TreeMap<>();
 		map.put(Answer.A, String.format( "%.2f", (((double)countA) / totalCount) * 100 ) + "%" );
 		map.put(Answer.B, String.format( "%.2f", (((double)countB) / totalCount) * 100 ) + "%" );
 		map.put(Answer.C, String.format( "%.2f", (((double)countC) / totalCount) * 100 ) + "%" );
@@ -177,6 +178,17 @@ public class ParticipantServiceImpl implements ParticipantService{
 			
 		System.out.println(map.toString());
 		return map.toString();		
+	}
+
+	@Override
+	public Participant getParticipantById(Long participantId) {
+		Optional<Participant> participantOp = participantRepository.findById(participantId);
+		
+		if (participantOp.isPresent()) {
+			return participantOp.get();
+		}else {
+			throw new ResourceNotFoundException("getParticipantById participant Id:" + participantId);
+		}
 	}
 
 }

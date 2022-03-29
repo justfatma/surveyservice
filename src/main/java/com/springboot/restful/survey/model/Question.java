@@ -24,6 +24,20 @@ public class Question {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JsonIgnore
 	private Survey survey;
+	
+	public Question() {
+		super();
+	}
+	
+	public Question(String description,String answerA,String answerB,String answerC,String answerD,String answerE) {
+		super();
+		this.description=description;
+		this.answerA=answerA;
+		this.answerB=answerB;
+		this.answerC=answerC;
+		this.answerD=answerD;
+		this.answerE=answerE;
+	}
 
 	public Long getId() {
 		return id;

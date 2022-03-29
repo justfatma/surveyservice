@@ -8,6 +8,7 @@ import com.springboot.restful.survey.model.Participant;
 public interface ParticipantService {
 	
 	public List<Participant> getParticipantList();
+	public Participant getParticipantById(Long participantId);
 	public Participant saveParticipantWithAnswers(Participant participant);
 	public Participant updateParticipantWithAnswers(Participant participant);	
 	public void deleteParticipantWithAnswers(Long participantId);

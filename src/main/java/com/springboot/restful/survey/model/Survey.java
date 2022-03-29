@@ -18,6 +18,18 @@ public class Survey {
 	
 	@OneToMany(mappedBy="survey")
 	private List<Question> questionList;
+	
+	public Survey() {
+		super();
+	}
+	
+	public Survey(String name, String description, List<Question> questionList) {
+		super();
+		this.name=name;
+		this.description=description;
+		this.questionList=questionList;
+	}
+	
 
 	public Long getId() {
 		return id;

@@ -18,14 +18,14 @@ import com.springboot.restful.survey.service.SurveyService;
 public class SurveyServiceImpl implements SurveyService{
 	
 	@Autowired
-	private SurveyRepository surveyRepo;
+	private SurveyRepository surveyRepository;
 	
 	@Autowired
-	private QuestionRepository questionRepo;
+	private QuestionRepository questionRepository;
 
 	@Override
 	public Survey getSurveyById(Long surveyId) {
-		Optional<Survey> surveyOp=surveyRepo.findById(surveyId);
+		Optional<Survey> surveyOp = surveyRepository.findById(surveyId);
 		
 		if (surveyOp.isPresent()) {
 			return surveyOp.get();
@@ -36,18 +36,18 @@ public class SurveyServiceImpl implements SurveyService{
 
 	@Override
 	public List<Survey> getSurveyList() {
-		return surveyRepo.findAll();		
+		return surveyRepository.findAll();		
 	}
 
 	@Override
 	public Survey saveSurvey(Survey survey) {
-		Survey savedSurvey=surveyRepo.save(survey);
+		Survey savedSurvey = surveyRepository.save(survey);
 		List<Question> savedQuestionList = new ArrayList<>();
 		
-		List<Question> questionList= survey.getQuestionList();
+		List<Question> questionList = survey.getQuestionList();
 		for (Question question: questionList) {
 			question.setSurvey(savedSurvey);
-			savedQuestionList.add( questionRepo.save(question));
+			savedQuestionList.add( questionRepository.save(question));
 		}
 		savedSurvey.setQuestionList(savedQuestionList);
 		return savedSurvey;
@@ -56,21 +56,21 @@ public class SurveyServiceImpl implements SurveyService{
 	@Override
 	public Survey updateSurvey(Long id, Survey survey) {
 		
-		Survey currentsurvey= surveyRepo.findById(id).orElseThrow( 
+		Survey currentsurvey = surveyRepository.findById(id).orElseThrow( 
 				()-> new ResourceNotFoundException("SurveyServiceImpl/updateSurvey : Survey Id not found. -> " + survey.getId()));
 			
 		currentsurvey.setName(survey.getName());
 		currentsurvey.setDescription(survey.getDescription());
 	
-		List<Question> questionList= survey.getQuestionList();
+		List<Question> questionList = survey.getQuestionList();
 		
-		Survey savedSurvey=surveyRepo.save(currentsurvey);
+		Survey savedSurvey=surveyRepository.save(currentsurvey);
 		
 		
-		List<Question> savedQuestions=new ArrayList<>();
+		List<Question> savedQuestions = new ArrayList<>();
 		for(Question question:questionList) {
 			
-			Question ques= questionRepo.getById(question.getId());
+			Question ques= questionRepository.getById(question.getId());
 					
 			ques.setAnswerA(question.getAnswerA());
 			ques.setAnswerB(question.getAnswerB());
@@ -79,7 +79,7 @@ public class SurveyServiceImpl implements SurveyService{
 			ques.setAnswerE(question.getAnswerE());
 			ques.setDescription(question.getDescription());
 			
-			Question savedQuestion= questionRepo.save(ques);
+			Question savedQuestion = questionRepository.save(ques);
 			savedQuestions.add(savedQuestion );
 		}
 		
@@ -92,15 +92,15 @@ public class SurveyServiceImpl implements SurveyService{
 	@Override
 	public void deleteSurvey(Long surveyId) {
 		
-		List<Question> questionList = questionRepo.findBySurveyId(surveyId);
+		List<Question> questionList = questionRepository.findBySurveyId(surveyId);
 		for(Question questionToBeDeleted: questionList) {
-			questionRepo.delete(questionToBeDeleted);
+			questionRepository.delete(questionToBeDeleted);
 		}
 		
-		Survey currentsurvey= surveyRepo.findById(surveyId).orElseThrow( 
+		Survey currentsurvey = surveyRepository.findById(surveyId).orElseThrow( 
 				()-> new ResourceNotFoundException("SurveyServiceImpl/deleteSurvey : Survey Id not found. -> " + surveyId));
 	
-		surveyRepo.delete(currentsurvey);
+		surveyRepository.delete(currentsurvey);
 	}
 
 }

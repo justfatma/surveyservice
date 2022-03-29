@@ -20,6 +20,17 @@ public class Participant {
 	@OneToMany(mappedBy="participant")
 	private List<ParticipantAnswer> answerList;
 	
+	public Participant() {
+		super();
+	}
+	
+	public Participant(String name, String surname, String age, List<ParticipantAnswer> answerList) {
+		super();
+		this.name=name;
+		this.surname=surname;
+		this.age=age;
+		this.answerList=answerList;
+	}
 	
 	public Long getId() {
 		return id;
