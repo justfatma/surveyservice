@@ -30,7 +30,7 @@ public class SurveyController {
 	private QuestionServiceImpl questionServiceImpl;
 	
 	
-	@GetMapping("/surveys")
+	@GetMapping("surveys")
 	public List<Survey> getSurveyList() {
 				
 		List<Survey> list= surveyServiceImpl.getSurveyList();
@@ -42,7 +42,7 @@ public class SurveyController {
 	}
 	
 	
-	@GetMapping("/surveys/{surveyId}")
+	@GetMapping("surveys/{surveyId}")
 	public ResponseEntity<Survey> getSurveyById(@PathVariable Long surveyId) {
 				
 		return new ResponseEntity<Survey> (surveyServiceImpl.getSurveyById(surveyId), HttpStatus.OK);
